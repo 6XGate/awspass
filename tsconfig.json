@@ -1,0 +1,15 @@
+{
+    "extends": "ts-node/node12/tsconfig.json",
+    "compilerOptions": {
+        "jsx": "preserve"
+    },
+    "ts-node": {
+        // Remove these to type check
+        "transpileOnly": true,
+        "swc": true
+    },
+    "exclude": [
+        "node_modules",
+        "**/node_modules/*"
+    ]
+}

@@ -1,0 +1,33 @@
+{
+    "name": "aws-credential-process",
+    "version": "0.1.0",
+    "description": "Stores AWS credentials in the OS keyring",
+    "main": "./bin/aws-credentials.cjs",
+    "scripts": {
+        "test": "echo \"Error: no test specified\" && exit 1",
+        "aws-credentials": "./bin/aws-credentials.cjs"
+    },
+    "author": "Matthew Holder",
+    "license": "GPL-2.0-or-later",
+    "directories": {
+        "bin": "./bin"
+    },
+    "dependencies": {
+        "@aws-sdk/client-sts": "^3.121.0",
+        "@swc/core": "^1.2.210",
+        "@swc/wasm": "^1.2.210",
+        "@types/ini": "^1.3.31",
+        "@types/node": "^18.0.3",
+        "@types/prompts": "^2.0.14",
+        "@types/totp-generator": "^0.0.4",
+        "@types/yargs": "^17.0.10",
+        "ini": "^3.0.0",
+        "keytar": "^7.9.0",
+        "prompts": "^2.4.2",
+        "totp-generator": "^0.0.13",
+        "ts-node": "^10.8.2",
+        "typescript": "^4.7.4",
+        "vahvista": "^1.2.0",
+        "yargs": "^17.5.1"
+    }
+}
