@@ -1,7 +1,7 @@
-import { promises as fs } from 'fs'
 import ini from 'ini'
-import os from 'os'
-import { normalize, resolve } from 'path'
+import { promises as fs } from 'node:fs'
+import os from 'node:os'
+import { normalize, resolve } from 'node:path'
 import v, { Predicate } from 'vahvista'
 
 export interface AwsCredentialPayload {

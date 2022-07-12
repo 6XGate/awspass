@@ -1,13 +1,14 @@
 import prompts from 'prompts'
 import { awsConfig, getAwsProfileKey, isAwsAccessKeyId, isAwsMfaDevice, isAwsSecretAccessKey } from '../utils/aws'
 import keyRing, { isBase32, isStoredCredentials, StoredCredentials } from '../utils/key-ring'
-import { kExitFailure } from '../utils/system'
+import { Logger } from '../utils/output'
+import { kExitFailure, program } from '../utils/system'
 
 export default async function setupProfile (profile: undefined | string): Promise<void> {
   const profileKey = getAwsProfileKey(profile)
   const existing = await keyRing.getCredentials(profileKey)
   if (existing != null) {
-    console.warn(`${profile ?? 'default'} profile already exists, updating credentials!`)
+    Logger.current.warn(`${profile ?? 'default'} profile already exists, updating credentials!`)
   }
 
   const credentials: StoredCredentials = await prompts([
@@ -38,7 +39,7 @@ export default async function setupProfile (profile: undefined | string): Promis
     ],
     {
       onCancel: (): never => {
-        console.warn('Cancelling')
+        Logger.current.warn('Cancelling')
         process.exit(kExitFailure)
       }
     })
@@ -50,13 +51,13 @@ export default async function setupProfile (profile: undefined | string): Promis
   const config = await awsConfig.getConfig()
   const originalProfileConfig = awsConfig.getProfile(config, profileKey)
   const command = profile != null && profile.length > 0
-    ? `"${kMainFilename}" session ${profile}`
-    : `"${kMainFilename}" session`
+    ? `"${program.filePath}" session ${profile}`
+    : `"${program.filePath}" session`
 
   const profileConfig = { ...originalProfileConfig, credential_process: command }
 
   await awsConfig.updateProfile(config, profileKey, profileConfig)
   await keyRing.storeCredentials(profileKey, credentials)
 
-  console.log(originalProfileConfig == null ? `[${profileKey}] created` : `[${profileKey}] updated`)
+  Logger.current.log(originalProfileConfig == null ? `[${profileKey}] created` : `[${profileKey}] updated`)
 }

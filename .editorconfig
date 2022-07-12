@@ -11,5 +11,8 @@ charset = utf-8
 trim_trailing_whitespace = true
 insert_final_newline = true
 
-[*.{js,jsx,ts,tsx}]
+[*.json]
+indent_size = 2
+
+[*.{js,jsx,cjs,mjs,ts,tsx}]
 indent_size = 2
