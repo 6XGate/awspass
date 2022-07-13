@@ -5,34 +5,42 @@
   "version": "0.2.0",
   "configurations": [
     {
-      "type": "pwa-node",
+      "type": "node",
       "request": "launch",
-      "name": "Setup profile",
-      "skipFiles": [
-        "<node_internals>/**"
-      ],
-      "program": "${workspaceFolder}/bin/aws-credentials.cjs",
-      "args": [
-        "setup"
-      ],
-      "outFiles": [
-        "${workspaceFolder}/**/*.js"
-      ]
+      "name": "Build production",
+      "cwd": "${workspaceFolder}",
+      "skipFiles": ["<node_internals>/**"],
+      "runtimeExecutable": "npm",
+      "args": ["run", "build.production"]
     },
     {
-      "type": "pwa-node",
+      "type": "node",
+      "request": "launch",
+      "name": "Build production",
+      "cwd": "${workspaceFolder}",
+      "skipFiles": ["<node_internals>/**"],
+      "runtimeExecutable": "npm",
+      "args": ["run", "build.development"]
+    },
+    {
+      "type": "node",
+      "request": "launch",
+      "name": "Setup profile",
+      "cwd": "${workspaceFolder}",
+      "skipFiles": ["<node_internals>/**"],
+      "program": "${workspaceFolder}/bin/aws-credentials.cjs",
+      "args": ["setup"],
+      "outFiles": ["${workspaceFolder}/**/*.js"]
+    },
+    {
+      "type": "node",
       "request": "launch",
       "name": "Get session",
-      "skipFiles": [
-        "<node_internals>/**"
-      ],
+      "cwd": "${workspaceFolder}",
+      "skipFiles": ["<node_internals>/**"],
       "program": "${workspaceFolder}/bin/aws-credentials.cjs",
-      "args": [
-        "session"
-      ],
-      "outFiles": [
-        "${workspaceFolder}/**/*.js"
-      ]
+      "args": ["session"],
+      "outFiles": ["${workspaceFolder}/**/*.js"]
     }
   ]
 }
