@@ -15,6 +15,9 @@
   "directories": {
     "bin": "./bin"
   },
+  "bin": {
+    "aws-credentials": "bin/aws-credentials.cjs"
+  },
   "engines": {
     "node": ">=14"
   },
