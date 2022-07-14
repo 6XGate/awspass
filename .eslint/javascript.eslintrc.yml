@@ -1,0 +1,19 @@
+extends:
+  - standard
+  - eslint:recommended
+  - plugin:import/recommended
+  - plugin:promise/recommended
+  - plugin:node/recommended
+env:
+  es2020: true
+parserOptions:
+  ecmaVersion: 2020
+rules:
+  # Allow range style, example: 0 < value && value < 100
+  yoda:
+    - error
+    - never
+    - exceptRange: true
+  # Always disallow AMD module syntax
+  import/no-amd:
+    - error

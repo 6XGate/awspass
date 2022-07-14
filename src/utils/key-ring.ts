@@ -54,7 +54,7 @@ const keyRing = {
       return null
     }
 
-    const credentials = JSON.parse(data)
+    const credentials = JSON.parse(data) as unknown
     if (!isAwsCredentialPayload(credentials)) {
       Logger.current.error(`Data from @aws/session/${profileKey} is not our AWS session key payload\nGot "${data}"`)
 

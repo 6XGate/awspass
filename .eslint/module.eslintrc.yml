@@ -1,0 +1,9 @@
+extends:
+  - ./javascript.eslintrc.yml
+  - plugin:node/recommended-module
+parserOptions:
+  ecmaVersion: 2020
+  sourceType: module
+rules:
+  # Disallow CommonJS module syntax in ES modules
+  import/no-commonjs: error

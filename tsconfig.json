@@ -4,7 +4,8 @@
   "compilerOptions": {
     "module": "ESNext",
     "jsx": "preserve",
-    "sourceMap": true
+    "sourceMap": true,
+    "resolveJsonModule": true
   },
   "exclude": [
     "node_modules",

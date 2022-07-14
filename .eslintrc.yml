@@ -1,0 +1,21 @@
+# Master configuration.
+root: true
+
+# Environments being used.
+env:
+  node: true
+
+# Report any unused directive, lets keep things tidy.
+reportUnusedDisableDirectives: true
+
+# By extension rule sets.
+overrides:
+  # CommonJS Modules
+  - files: ['**/*.js', '**/*.cjs']
+    extends: './.eslint/common.eslintrc.yml'
+  # ECMAScript Modules
+  - files: ['**/*.mjs', '**/*.jsx']
+    extends: './.eslint/module.eslintrc.yml'
+  # TypeScript
+  - files: ['**/*.ts', '**/*.tsx', '**/*.d.ts']
+    extends: './.eslint/typescript.eslintrc.yml'

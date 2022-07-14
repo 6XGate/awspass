@@ -5,7 +5,7 @@ import type { FileHandle } from 'node:fs/promises'
 import { open } from 'node:fs/promises'
 import { dirname, normalize, resolve } from 'node:path'
 import { format } from 'node:util'
-import { program } from './system'
+import { program } from './branding'
 
 export const enum LogLevel {
   debug = 'debug',
@@ -72,31 +72,32 @@ export class ConsoleLogger extends Logger {
 }
 
 export class FileLogger extends Logger {
-  private handle: FileHandle
+  private readonly handle: FileHandle
 
   private constructor (handle: FileHandle) {
     super()
 
     this.handle = handle
 
+    // eslint-disable-next-line @typescript-eslint/no-misused-promises -- Required to properly close the logger
     process.once('beforeExit', async () => {
       await handle.close()
     })
   }
 
-  static async getLogPath (): Promise<string> {
+  static getLogPath (): string {
     const kPaths = envPaths(program.name, { suffix: '' })
 
     return normalize(resolve(kPaths.log))
   }
 
-  static async getLogFilePath (): Promise<string> {
-    return normalize(resolve(await FileLogger.getLogPath(), `${program.name}.log`))
+  static getLogFilePath (): string {
+    return normalize(resolve(FileLogger.getLogPath(), `${program.name}.log`))
   }
 
   static async open (path?: string): Promise<FileLogger> {
     if (path == null || path.length === 0) {
-      path = await FileLogger.getLogFilePath()
+      path = FileLogger.getLogFilePath()
     }
 
     await makeDir(dirname(path))
@@ -110,14 +111,14 @@ export class FileLogger extends Logger {
       return
     }
 
-    optionalParams != null
+    optionalParams.length > 0
       ? writeSync(this.handle.fd, `${new Date().toISOString()}: ${level.toUpperCase()}: ${format(message, ...optionalParams)}`)
-      : writeSync(this.handle.fd, `${new Date().toISOString()}: ${level.toUpperCase()}: ${message}`)
+      : writeSync(this.handle.fd, `${new Date().toISOString()}: ${level.toUpperCase()}: ${String(message)}`)
   }
 }
 
 export class LoggerStack extends Logger {
-  private stack: Logger[]
+  private readonly stack: Logger[]
 
   constructor (...stack: Logger[]) {
     super()
@@ -130,7 +131,7 @@ export class LoggerStack extends Logger {
       return
     }
 
-    if (optionalParams != null) {
+    if (optionalParams.length > 0) {
       message = format(message, ...optionalParams)
     }
 
@@ -158,12 +159,12 @@ export class ConditionalLogger extends Logger {
       return
     }
 
-    if (this.conditions[level]) {
+    if (this.conditions[level] === true) {
       this.logger.out(level, message, ...optionalParams)
     }
   }
 }
 
-const kConsoleLogger = new class extends ConsoleLogger {constructor () { super() }}()
+const kConsoleLogger = new class extends ConsoleLogger { public constructor () { super() } }()
 
 let currentLogger: Logger = ConsoleLogger.main

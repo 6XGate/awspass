@@ -1,0 +1,5 @@
+target: minor
+reject:
+  # Erronous later tagged release keeps overriding real latest:
+  # https://github.com/DefinitelyTyped/DefinitelyTyped/issues/59890
+  - '@types/prompts'

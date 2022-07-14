@@ -1,0 +1,28 @@
+parser: '@typescript-eslint/parser'
+plugins: ['@typescript-eslint']
+extends:
+  - ./module.eslintrc.yml
+  - standard-with-typescript
+  - plugin:import/typescript
+  - plugin:@typescript-eslint/recommended
+  - plugin:@typescript-eslint/recommended-requiring-type-checking
+  - plugin:@typescript-eslint/strict
+parserOptions:
+  project: tsconfig.json
+rules:
+  # Allow range style, example: 0 < value && value < 100
+  yoda:
+    - error
+    - never
+    - exceptRange: true
+  # Tell `node/no-missing-import` which extensions to try
+  node/no-missing-import:
+    - error
+    - tryExtensions:
+      - .ts
+      - .tsx
+      - .d.ts
+      - .js
+      - .jsx
+      - .mjs
+      - .cjs

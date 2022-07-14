@@ -1,8 +1,9 @@
+import kleur from 'kleur'
 import prompts from 'prompts'
 import { awsConfig, getAwsProfileKey, isAwsAccessKeyId, isAwsMfaDevice, isAwsSecretAccessKey } from '../utils/aws'
+import { program } from '../utils/branding'
 import keyRing, { isBase32, isStoredCredentials, StoredCredentials } from '../utils/key-ring'
 import { Logger } from '../utils/output'
-import { kExitFailure, program } from '../utils/system'
 
 export default async function setupProfile (profile: undefined | string): Promise<void> {
   const profileKey = getAwsProfileKey(profile)
@@ -12,37 +13,36 @@ export default async function setupProfile (profile: undefined | string): Promis
   }
 
   const credentials: StoredCredentials = await prompts([
-      {
-        type: 'text' as const,
-        name: 'keyId' as const,
-        message: 'AWS Key ID',
-        validate: value => isAwsAccessKeyId(value)
-      },
-      {
-        type: 'password' as const,
-        name: 'secretKey' as const,
-        message: 'AWS Secret Key',
-        validate: value => isAwsSecretAccessKey(value)
-      },
-      {
-        type: 'text' as const,
-        name: 'mfaDevice' as const,
-        message: 'MFA Device Serial or ARN',
-        validate: value => value == null || isAwsMfaDevice(value)
-      },
-      {
-        type: prev => isAwsMfaDevice(prev) ? 'password' : null,
-        name: 'mfaKey' as const,
-        message: 'MFA Source Key',
-        validate: value => isBase32(value)
-      }
-    ],
     {
-      onCancel: (): never => {
-        Logger.current.warn('Cancelling')
-        process.exit(kExitFailure)
-      }
-    })
+      type: 'text' as const,
+      name: 'keyId' as const,
+      message: `AWS Key ID ${kleur.reset().dim('required (AXXXXXXXXXXXXXXXXXXX)')}`,
+      validate: value => isAwsAccessKeyId(value)
+    },
+    {
+      type: 'password' as const,
+      name: 'secretKey' as const,
+      message: `AWS Secret Key ${kleur.reset().dim('required (XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX)')}`,
+      validate: value => isAwsSecretAccessKey(value)
+    },
+    {
+      type: 'text' as const,
+      name: 'mfaDevice' as const,
+      message: `MFA Device Serial or ARN ${kleur.reset().dim('optional (device serial) or (arn:aws:iam::############:mfa/user)')}`,
+      validate: value => value == null || isAwsMfaDevice(value)
+    },
+    {
+      type: prev => isAwsMfaDevice(prev) ? 'password' : undefined,
+      name: 'mfaKey' as const,
+      message: `MFA Source Key ${kleur.reset().dim('required')}`,
+      validate: value => isBase32(value)
+    }
+  ],
+  {
+    onCancel: (): never => {
+      throw new Error('Cancelled')
+    }
+  })
 
   if (!isStoredCredentials(credentials)) {
     throw new Error('Validation failed on user input')

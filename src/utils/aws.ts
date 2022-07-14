@@ -12,7 +12,7 @@ export interface AwsCredentialPayload {
   Expiration: string
 }
 
-export interface BaseConfigSection {[P: string]: string | Partial<BaseConfigSection>}
+export interface BaseConfigSection { [P: string]: string | Partial<BaseConfigSection> }
 
 export type ConfigSection = Partial<BaseConfigSection>
 
@@ -25,6 +25,7 @@ export const isAwsSecretAccessKey = v.matches(kAwsSecretAccessKeyPattern)
 export const isAwsMfaDevice = v.matches(kAwsMfaDevicePattern)
 
 export const isAwsCredentialPayload = v.shape({
+  // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion -- It does, from Predicate<number to Predicate<1>
   Version: v.equal(1) as Predicate<1>,
   AccessKeyId: isAwsAccessKeyId,
   SecretAccessKey: isAwsSecretAccessKey,
@@ -45,7 +46,7 @@ export const awsConfig = {
       const path = normalize(resolve(os.homedir(), '.aws', 'config'))
       const config = await fs.readFile(path, 'utf-8')
 
-      return ini.parse(config) ?? {}
+      return ini.parse(config)
     } catch (error) {
       return {}
     }
@@ -73,7 +74,7 @@ export function getAwsProfileKey (profile: undefined | string): string {
 }
 
 export async function getAwsRegion (profile: undefined | string): Promise<undefined | string> {
-  const region = process.env['AWS_REGION']
+  const region = process.env.AWS_REGION
   if (region != null) {
     return region
   }
@@ -81,12 +82,12 @@ export async function getAwsRegion (profile: undefined | string): Promise<undefi
   const profileKey = getAwsProfileKey(profile)
   const config = await awsConfig.getConfig()
   let profileConfig = config[profileKey]
-  if (typeof profileConfig === 'object' && typeof profileConfig?.region === 'string') {
+  if (typeof profileConfig === 'object' && typeof profileConfig.region === 'string') {
     return profileConfig.region
   }
 
   profileConfig = config.default
-  if (typeof profileConfig === 'object' && typeof profileConfig?.region === 'string') {
+  if (typeof profileConfig === 'object' && typeof profileConfig.region === 'string') {
     return profileConfig.region
   }
 

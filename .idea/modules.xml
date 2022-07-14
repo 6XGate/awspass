@@ -2,7 +2,7 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/.idea/aws-credential-process.iml" filepath="$PROJECT_DIR$/.idea/aws-credential-process.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/aws-credentials.iml" filepath="$PROJECT_DIR$/.idea/aws-credentials.iml" />
     </modules>
   </component>
 </project>

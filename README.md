@@ -19,3 +19,7 @@ You can also add a profile name to setup using `npm . setup <name>`.
 1. Remove the cloned code directory
 2. In the AWS CLI configuration, remove any lines referencing `<clone dir>/bin/aws-credentials.cjs session` which will
    be `credential_process` settings.
+
+## Usage
+
+### Setting up or updating a profile
