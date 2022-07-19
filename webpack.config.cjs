@@ -1,9 +1,9 @@
 const { chmod, stat } = require('node:fs/promises')
 const { normalize, resolve } = require('node:path')
 const { BannerPlugin } = require('webpack')
-const WebpackBarPlugin = require('webpackbar')
-const WebpackNotifierPlugin = require('webpack-notifier')
 const nodeExternals = require('webpack-node-externals')
+const WebpackNotifierPlugin = require('webpack-notifier')
+const WebpackBarPlugin = require('webpackbar')
 
 // These modules are ES6 modules that require import()
 const esmModules = ['env-paths']

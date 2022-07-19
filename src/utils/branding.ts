@@ -1,6 +1,6 @@
+import { basename } from 'node:path'
 import { oneLineCommaListsAnd } from 'common-tags'
 import { DateTime } from 'luxon'
-import { basename } from 'node:path'
 import spdxLicenseList from 'spdx-license-list'
 import packageInfo from '../../package.json'
 

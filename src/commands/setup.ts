@@ -3,13 +3,14 @@ import prompts from 'prompts'
 import { awsConfig, getAwsProfileKey, isAwsAccessKeyId, isAwsMfaDevice, isAwsSecretAccessKey } from '../utils/aws'
 import { program } from '../utils/branding'
 import keyRing, { isBase32, isStoredCredentials, StoredCredentials } from '../utils/key-ring'
-import { Logger } from '../utils/output'
+import logger from '../utils/logger'
+import { CancelError } from '../utils/system'
 
 export default async function setupProfile (profile: undefined | string): Promise<void> {
   const profileKey = getAwsProfileKey(profile)
   const existing = await keyRing.getCredentials(profileKey)
   if (existing != null) {
-    Logger.current.warn(`${profile ?? 'default'} profile already exists, updating credentials!`)
+    logger.warn(`${profile ?? 'default'} profile already exists, updating credentials!`)
   }
 
   const credentials: StoredCredentials = await prompts([
@@ -40,7 +41,7 @@ export default async function setupProfile (profile: undefined | string): Promis
   ],
   {
     onCancel: (): never => {
-      throw new Error('Cancelled')
+      throw new CancelError()
     }
   })
 
@@ -59,5 +60,5 @@ export default async function setupProfile (profile: undefined | string): Promis
   await awsConfig.updateProfile(config, profileKey, profileConfig)
   await keyRing.storeCredentials(profileKey, credentials)
 
-  Logger.current.log(originalProfileConfig == null ? `[${profileKey}] created` : `[${profileKey}] updated`)
+  logger.info(originalProfileConfig == null ? `[${profileKey}] created` : `[${profileKey}] updated`)
 }

@@ -1,0 +1,34 @@
+{
+	"version": "2.0.0",
+	"tasks": [
+    {
+      "type": "npm",
+      "script": "build.development",
+      "group": {
+        "kind": "build",
+        "isDefault": true
+      },
+      "problemMatcher": [],
+      "label": "Build (Development)"
+    },
+    {
+      "type": "npm",
+      "script": "build.production",
+      "group": "build",
+      "problemMatcher": [],
+      "label": "Build (Production)"
+    },
+    {
+      "type": "npm",
+      "script": "lint",
+      "problemMatcher": [],
+      "label": "Lint source"
+    },
+    {
+      "type": "npm",
+      "script": "fix",
+      "problemMatcher": [],
+      "label": "Fix lint issues"
+    }
+  ]
+}

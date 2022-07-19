@@ -1,7 +1,7 @@
-import ini from 'ini'
 import { promises as fs } from 'node:fs'
-import os from 'node:os'
+import os, { homedir } from 'node:os'
 import { normalize, resolve } from 'node:path'
+import ini from 'ini'
 import v, { Predicate } from 'vahvista'
 
 export interface AwsCredentialPayload {
@@ -57,7 +57,7 @@ export const awsConfig = {
   },
 
   updateProfile: async (config: ConfigSection, profileKey: string, profileConfig: ConfigSection = {}): Promise<void> => {
-    const path = normalize(resolve(os.homedir(), '.aws', 'config'))
+    const path = normalize(resolve(homedir(), '.aws', 'config'))
 
     config[profileKey] = profileConfig
 

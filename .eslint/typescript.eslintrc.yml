@@ -26,3 +26,5 @@ rules:
       - .jsx
       - .mjs
       - .cjs
+  # Already fully handled by TypeScript
+  '@typescript-eslint/no-redeclare': off

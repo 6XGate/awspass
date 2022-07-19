@@ -14,6 +14,32 @@ rules:
     - error
     - never
     - exceptRange: true
+  # Our preferred import order
+  import/order:
+    - error
+    - newlines-between: never
+      alphabetize:
+        order: asc
+        caseInsensitive: false
+      groups:
+      - builtin
+      - external
+      - internal
+      - unknown
+      - parent
+      - sibling
+      - index
+      - object
+      - type
+  # Always require extends, except on TypeScript which doesn't like it
+  import/extensions:
+    - error
+    - always
+    - ignorePackages: true
+      pattern:
+        ts: never
+        tsx: never
+        d.ts: never
   # Always disallow AMD module syntax
   import/no-amd:
     - error

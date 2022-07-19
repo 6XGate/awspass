@@ -1,8 +1,8 @@
 import { GetSessionTokenCommand, STSClient } from '@aws-sdk/client-sts'
 import totp from 'totp-generator'
-import type { AwsCredentialPayload } from '../utils/aws'
 import { getAwsProfileKey, getAwsRegion, isAwsStsResponseCredentials } from '../utils/aws'
 import keyRing from '../utils/key-ring'
+import type { AwsCredentialPayload } from '../utils/aws'
 
 export default async function getSession (profile: undefined | string): Promise<void> {
   const region = await getAwsRegion(profile)

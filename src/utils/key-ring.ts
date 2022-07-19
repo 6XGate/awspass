@@ -1,9 +1,9 @@
 import keytar from 'keytar'
 import v from 'vahvista'
-import type { AwsCredentialPayload } from './aws'
 import { isAwsAccessKeyId, isAwsCredentialPayload, isAwsMfaDevice, isAwsSecretAccessKey } from './aws'
-import { Logger } from './output'
+import logger from './logger'
 import { validate } from './validation'
+import type { AwsCredentialPayload } from './aws'
 
 export const kBase32Pattern = /^[A-Z2-7=]+$/u
 
@@ -35,7 +35,7 @@ const keyRing = {
 
     const credentials = JSON.parse(data) as null | Partial<StoredCredentials>
     if (!isStoredCredentials(credentials)) {
-      Logger.current.error(`Data from @aws/session/${profileKey} is not our stored access key data\nGot "${data}"`)
+      logger.error(`Data from @aws/session/${profileKey} is not our stored access key data\nGot "${data}"`)
 
       return null
     }
@@ -56,13 +56,13 @@ const keyRing = {
 
     const credentials = JSON.parse(data) as unknown
     if (!isAwsCredentialPayload(credentials)) {
-      Logger.current.error(`Data from @aws/session/${profileKey} is not our AWS session key payload\nGot "${data}"`)
+      logger.error(`Data from @aws/session/${profileKey} is not our AWS session key payload\nGot "${data}"`)
 
       return null
     }
 
     if (Date.parse(credentials.Expiration) <= Date.now()) {
-      Logger.current.warn('Sesssion expired')
+      logger.warn('Sesssion expired')
 
       return null
     }

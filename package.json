@@ -10,9 +10,9 @@
     "build.production": "webpack --mode=production",
     "build.development": "webpack --mode=development",
     "build": "npm run build.production",
-    "lint": "eslint **/*.ts **/*.cjs",
-    "fix": "eslint --fix **/*.ts **/*.cjs"
-},
+    "lint": "eslint src/**/*.ts *.cjs",
+    "fix": "eslint --fix src/**/*.ts *.cjs"
+  },
   "author": "Matthew Holder",
   "license": "GPL-2.0",
   "directories": {
@@ -37,12 +37,14 @@
     "ini": "^3.0.0",
     "keytar": "^7.9.0",
     "kleur": "^4.1.5",
+    "logform": "^2.4.2",
     "luxon": "^3.0.1",
     "make-dir": "^3.1.0",
     "prompts": "^2.4.2",
     "spdx-license-list": "^6.6.0",
     "totp-generator": "^0.0.13",
     "vahvista": "^1.2.0",
+    "winston": "^3.8.1",
     "yargs": "^17.5.1"
   },
   "devDependencies": {
