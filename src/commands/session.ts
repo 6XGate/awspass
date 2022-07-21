@@ -1,10 +1,23 @@
 import { GetSessionTokenCommand, STSClient } from '@aws-sdk/client-sts'
 import totp from 'totp-generator'
+import { Argv } from 'yargs'
 import { getAwsProfileKey, getAwsRegion, isAwsStsResponseCredentials } from '../utils/aws'
 import keyRing from '../utils/key-ring'
 import type { AwsCredentialPayload } from '../utils/aws'
 
-export default async function getSession (profile: undefined | string): Promise<void> {
+export const command = 'session [profile]'
+
+export const describe = 'gets a session token for a profile'
+
+// eslint-disable-next-line @typescript-eslint/explicit-function-return-type -- Must be deduced
+export const builder = (builder: Argv) => builder.positional('profile', {
+  type: 'string',
+  describe: 'The name of the profile'
+})
+
+type Arguments = Awaited<ReturnType<typeof builder>['argv']>
+
+export async function handler ({ profile }: Arguments): Promise<void> {
   const region = await getAwsRegion(profile)
   if (region == null) {
     throw new ReferenceError('No region is set')

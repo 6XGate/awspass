@@ -37,7 +37,9 @@ const logTransports = [
     )
   }),
   new transports.Console({
-    format: format.cli()
+    format: format.cli(),
+    stderrLevels: ['error', 'warn', 'debug'],
+    consoleWarnLevels: ['warn', 'debug']
   })
 ]
 

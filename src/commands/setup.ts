@@ -1,12 +1,25 @@
 import kleur from 'kleur'
 import prompts from 'prompts'
+import { Argv } from 'yargs'
 import { awsConfig, getAwsProfileKey, isAwsAccessKeyId, isAwsMfaDevice, isAwsSecretAccessKey } from '../utils/aws'
 import { program } from '../utils/branding'
 import keyRing, { isBase32, isStoredCredentials, StoredCredentials } from '../utils/key-ring'
 import logger from '../utils/logger'
 import { CancelError } from '../utils/system'
 
-export default async function setupProfile (profile: undefined | string): Promise<void> {
+export const command = 'setup [profile]'
+
+export const describe = 'setup a profile'
+
+// eslint-disable-next-line @typescript-eslint/explicit-function-return-type -- Must be deduced
+export const builder = (builder: Argv) => builder.positional('profile', {
+  type: 'string',
+  describe: 'A name for the profile'
+})
+
+type Arguments = Awaited<ReturnType<typeof builder>['argv']>
+
+export async function handler ({ profile }: Arguments): Promise<void> {
   const profileKey = getAwsProfileKey(profile)
   const existing = await keyRing.getCredentials(profileKey)
   if (existing != null) {
