@@ -10,14 +10,42 @@ export const command = 'session [profile]'
 export const describe = 'gets a session token for a profile'
 
 // eslint-disable-next-line @typescript-eslint/explicit-function-return-type -- Must be deduced
-export const builder = (builder: Argv) => builder.positional('profile', {
-  type: 'string',
-  describe: 'The name of the profile'
-})
+export const builder = (builder: Argv) => builder
+  .option('env', {
+    type: 'boolean',
+    describe: 'Output an environment block rather than JSON',
+    default: false,
+    alias: 'e'
+  })
+  .positional('profile', {
+    type: 'string',
+    describe: 'The name of the profile'
+  })
 
 type Arguments = Awaited<ReturnType<typeof builder>['argv']>
 
-export async function handler ({ profile }: Arguments): Promise<void> {
+const kEnvMap: Record<string, string> = {
+  AccessKeyId: 'AWS_ACCESS_KEY_ID',
+  SecretAccessKey: 'AWS_SECRET_ACCESS_KEY',
+  SessionToken: 'AWS_SESSION_TOKEN',
+  Expiration: 'AWS_SESSION_EXPIRATION'
+}
+
+function sendCredentials (payload: AwsCredentialPayload, asJson = true): void {
+  if (!asJson) {
+    console.log(JSON.stringify(payload, null, 2))
+
+    return
+  }
+
+  for (const [name, value] of Object.entries(payload)) {
+    if (name in kEnvMap) {
+      console.log(`${kEnvMap[name]}=${String(value)}`)
+    }
+  }
+}
+
+export async function handler ({ profile, env: asEnv }: Arguments): Promise<void> {
   const region = await getAwsRegion(profile)
   if (region == null) {
     throw new ReferenceError('No region is set')
@@ -26,7 +54,7 @@ export async function handler ({ profile }: Arguments): Promise<void> {
   const profileKey = getAwsProfileKey(profile)
   const session = await keyRing.getSessionToken(profileKey)
   if (session != null) {
-    console.log(JSON.stringify(session, null, 2))
+    sendCredentials(session, asEnv)
 
     // Using the cached session
     return
@@ -68,5 +96,5 @@ export async function handler ({ profile }: Arguments): Promise<void> {
   }
 
   await keyRing.cacheSessionToken(profileKey, payload)
-  console.log(JSON.stringify(payload, null, 2))
+  sendCredentials(payload, asEnv)
 }

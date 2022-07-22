@@ -12,10 +12,11 @@ export const command = 'setup [profile]'
 export const describe = 'setup a profile'
 
 // eslint-disable-next-line @typescript-eslint/explicit-function-return-type -- Must be deduced
-export const builder = (builder: Argv) => builder.positional('profile', {
-  type: 'string',
-  describe: 'A name for the profile'
-})
+export const builder = (builder: Argv) => builder
+  .positional('profile', {
+    type: 'string',
+    describe: 'A name for the profile'
+  })
 
 type Arguments = Awaited<ReturnType<typeof builder>['argv']>
 
