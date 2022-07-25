@@ -7,10 +7,21 @@
     {
       "type": "node",
       "request": "launch",
+      "name": "Show help",
+      "cwd": "${workspaceFolder}",
+      "skipFiles": ["<node_internals>/**"],
+      "program": "${workspaceFolder}/bin/awspass.cjs",
+      "args": ["--help"],
+      "outFiles": ["${workspaceFolder}/**/*.js"],
+      "console": "integratedTerminal"
+    },
+    {
+      "type": "node",
+      "request": "launch",
       "name": "Setup profile",
       "cwd": "${workspaceFolder}",
       "skipFiles": ["<node_internals>/**"],
-      "program": "${workspaceFolder}/bin/aws-credentials.cjs",
+      "program": "${workspaceFolder}/bin/awspass.cjs",
       "args": ["setup"],
       "outFiles": ["${workspaceFolder}/**/*.js"],
       "console": "integratedTerminal"
@@ -21,7 +32,7 @@
       "name": "Get session",
       "cwd": "${workspaceFolder}",
       "skipFiles": ["<node_internals>/**"],
-      "program": "${workspaceFolder}/bin/aws-credentials.cjs",
+      "program": "${workspaceFolder}/bin/awspass.cjs",
       "args": ["session"],
       "outFiles": ["${workspaceFolder}/**/*.js"]
     }

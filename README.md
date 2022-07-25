@@ -1,25 +1,25 @@
-# AWS Credential Process
+# AWS Credential Source
 
-TODO: How about a better name.
+Stores your real AWS credentials in the system encrypted password storate and creates temporary session tokens when using AWS CLI.
 
 ## Installation
 
-**Work in progress**
-
-1. Clone the repository
-2. Run the following commands in the cloned directory:
-    1. `npm ci` to install the required dependencies.
-    2. `npm run build` to build the program
-    3. `node . setup` to setup the your AWS credentials which will be stored in your OS key-ring or key-store.
-
-You can also add a profile name to setup using `npm . setup <name>`.
-
-## Uninstall
-
-1. Remove the cloned code directory
-2. In the AWS CLI configuration, remove any lines referencing `<clone dir>/bin/aws-credentials.cjs session` which will
-   be `credential_process` settings.
+Run `npm i -g awspass`
 
 ## Usage
 
 ### Setting up or updating a profile
+
+Just run `awspass setup` or `awspass setup --profile <profile name>`
+
+This will ask for two to four parts of your AWS credentials
+- Access key ID
+- Secret key
+- MFA device serial number, must be provided if you are using MFA
+- MFA key, if you want awspass to enter OTP response for you
+
+Now all call to AWS CLI for the given profile will use `awspass` to log in.
+
+### Executing other tools with awspass
+
+Just use `awspass exec` followed by the command and arguments. You can also specify the profile by adding `--profile <profile>` before to the command to execute.

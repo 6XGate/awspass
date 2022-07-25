@@ -1,8 +1,8 @@
-import { normalize, resolve } from 'node:path'
 import process from 'node:process'
 import { DateTime } from 'luxon'
 import { createLogger, format, transports } from 'winston'
-import { program } from './branding'
+import { resolvePath } from '../helpers/path'
+import program from './package'
 import { kExitFailure, programPaths } from './system'
 import type { TransformableInfo } from 'logform'
 
@@ -16,7 +16,7 @@ function transformMessage (message: unknown): string {
   return typeof message === 'string' ? message : JSON.stringify(message)
 }
 
-const logPath = normalize(resolve(programPaths().log, `${program.name}.log`))
+const logPath = resolvePath(programPaths().log, `${program.name}.log`)
 
 interface ExtendedInfo extends TransformableInfo {
   timestamp?: string

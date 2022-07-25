@@ -1,4 +1,4 @@
-import { Predicate } from 'vahvista'
+import type { Predicate } from 'vahvista'
 
 export class ArgumentError extends Error {
   constructor (arg: string, message: string, value: unknown) {

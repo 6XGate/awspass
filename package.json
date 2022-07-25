@@ -1,12 +1,12 @@
 {
-  "name": "aws-credentials",
-  "version": "0.2.0",
+  "name": "awspass",
+  "version": "0.3.0",
   "description": "Stores AWS credentials in the OS keyring",
-  "main": "bin/aws-credentials.cjs",
+  "main": "bin/awspass.cjs",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "prepack": "npm run build.production",
-    "aws-credentials": "bin/aws-credentials.cjs",
+    "awspass": "bin/awspass.cjs",
     "build.production": "webpack --mode=production",
     "build.development": "webpack --mode=development",
     "build": "npm run build.production",
@@ -19,20 +19,22 @@
     "bin": "./bin"
   },
   "bin": {
-    "aws-credentials": "bin/aws-credentials.cjs"
+    "awspass": "bin/awspass.cjs"
   },
   "engines": {
     "node": ">=14"
   },
   "files": [
-    "bin/aws-credentials.cjs",
+    "bin/awspass.cjs",
     "README.md",
     "LICENSE"
   ],
   "dependencies": {
-    "@aws-sdk/client-sts": "^3.128.0",
+    "@aws-sdk/client-sts": "^3.131.0",
+    "commander": "^9.4.0",
     "common-tags": "^1.8.2",
     "env-paths": "^3.0.0",
+    "execa": "^6.1.0",
     "figures": "^4.0.1",
     "ini": "^3.0.0",
     "keytar": "^7.9.0",
@@ -44,29 +46,30 @@
     "spdx-license-list": "^6.6.0",
     "totp-generator": "^0.0.13",
     "vahvista": "^1.2.0",
-    "winston": "^3.8.1",
-    "yargs": "^17.5.1"
+    "which": "^2.0.2",
+    "winston": "^3.8.1"
   },
   "devDependencies": {
     "@tsconfig/node14": "^1.0.3",
     "@types/common-tags": "^1.8.1",
     "@types/ini": "^1.3.31",
-    "@types/luxon": "^2.3.2",
+    "@types/luxon": "^2.4.0",
     "@types/node": "14.*",
     "@types/prompts": "2.0.*",
     "@types/totp-generator": "^0.0.4",
-    "@types/yargs": "^17.0.10",
-    "@typescript-eslint/eslint-plugin": "^5.30.6",
-    "@typescript-eslint/parser": "^5.30.6",
-    "eslint": "^8.19.0",
+    "@types/which": "^2.0.1",
+    "@typescript-eslint/eslint-plugin": "^5.31.0",
+    "@typescript-eslint/parser": "^5.31.0",
+    "eslint": "^8.20.0",
     "eslint-config-standard": "^17.0.0",
     "eslint-config-standard-with-typescript": "^22.0.0",
     "eslint-plugin-import": "^2.26.0",
     "eslint-plugin-node": "^11.1.0",
     "eslint-plugin-promise": "^6.0.0",
     "ts-loader": "^9.3.1",
+    "type-fest": "^2.17.0",
     "typescript": "^4.7.4",
-    "webpack": "^5.73.0",
+    "webpack": "^5.74.0",
     "webpack-cli": "^4.10.0",
     "webpack-node-externals": "^3.0.0",
     "webpack-notifier": "^1.15.0",

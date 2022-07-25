@@ -6,7 +6,7 @@ const WebpackNotifierPlugin = require('webpack-notifier')
 const WebpackBarPlugin = require('webpackbar')
 
 // These modules are ES6 modules that require import()
-const esmModules = ['env-paths']
+const esmModules = ['execa', 'env-paths']
 
 /**
  * @param env {Object.<string, *>}
@@ -17,8 +17,8 @@ module.exports = (env, argv) => ({
   target: 'node14',
   entry: './src/main.ts',
   output: {
-    // $PROJECTDIR/bin/aws-credentials.cjs
-    filename: 'aws-credentials.cjs',
+    // $PROJECTDIR/bin/awspass.cjs
+    filename: 'awspass.cjs',
     path: resolve(__dirname, 'bin')
   },
   module: {
@@ -61,7 +61,7 @@ module.exports = (env, argv) => ({
   // Allow top-level await.
   experiments: { topLevelAwait: true },
   // Add source maps.
-  devtool: argv.mode === 'development' ? 'inline-source-map' : undefined,
+  devtool: argv.mode === 'development' ? 'source-map' : undefined,
   // Minification
   optimization: { minimize: argv.mode === 'production' }
 })

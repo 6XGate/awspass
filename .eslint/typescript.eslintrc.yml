@@ -26,5 +26,9 @@ rules:
       - .jsx
       - .mjs
       - .cjs
+  '@typescript-eslint/consistent-type-imports':
+    - error
+    - prefer: type-imports
+      disallowTypeAnnotations: true
   # Already fully handled by TypeScript
   '@typescript-eslint/no-redeclare': off
