@@ -3,7 +3,7 @@ import { kEnvNames, login } from '../../core/session'
 import { command } from '../common'
 import type { CommonOptions } from '../common'
 
-command('exec')
+command('exec', true)
   .description('execs a command')
   .argument('<command>', 'command to run')
   .argument('[args...]', 'arguments for command')

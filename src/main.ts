@@ -24,8 +24,8 @@ async function main (): Promise<void> {
 
   try {
     cli
-      .name(program.name)
-      .description('Allows using temporary session token when using AWS CLI or AWS compatible tools')
+      .name(program.baseName)
+      .description(program.description)
       .version(program.version)
       .addHelpText('after', helpEpilog)
 

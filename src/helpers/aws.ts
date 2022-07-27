@@ -4,7 +4,7 @@ import { resolve } from 'node:path'
 import process from 'node:process'
 import ini from 'ini'
 import v from 'vahvista'
-import { resolvePath } from './path'
+import { Paths } from './path'
 import type { CommonOptions } from '../cli/common'
 import type { PredicateType } from './types'
 import type { Predicate } from 'vahvista'
@@ -41,7 +41,7 @@ export const isAwsStsResponseCredentials = v.shape({
 
 export class AwsConfig {
   configFilePath = process.env.AWS_CONFIG_FILE != null && process.env.AWS_CONFIG_FILE.length > 0
-    ? resolvePath(process.env.AWS_CONFIG_FILE)
+    ? Paths.prepare(process.env.AWS_CONFIG_FILE)
     : resolve(homedir(), '.aws', 'config')
 
   async getConfig (): Promise<ConfigSection> {
@@ -67,30 +67,10 @@ export class AwsConfig {
 
 export const awsConfig = new AwsConfig()
 
-export function getAwsProfileKey (options?: CommonOptions): string {
+export function getAwsProfileKey (options: null | CommonOptions = null): string {
   if (options?.profile == null || options.profile.length === 0) {
     return 'default'
   }
 
   return `profile ${options.profile}`
-}
-
-export async function getAwsRegion (options?: CommonOptions): Promise<undefined | string> {
-  if (options?.region != null && options.region.length > 0) {
-    return options.region
-  }
-
-  const profileKey = getAwsProfileKey(options)
-  const config = await awsConfig.getConfig()
-  let profileConfig = config[profileKey]
-  if (typeof profileConfig === 'object' && typeof profileConfig.region === 'string') {
-    return profileConfig.region
-  }
-
-  profileConfig = config.default
-  if (typeof profileConfig === 'object' && typeof profileConfig.region === 'string') {
-    return profileConfig.region
-  }
-
-  return process.env.AWS_DEFAULT_REGION
 }

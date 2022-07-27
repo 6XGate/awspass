@@ -1,8 +1,7 @@
 {
-  "name": "awspass",
-  "version": "0.3.0",
-  "description": "Stores AWS credentials in the OS keyring",
-  "main": "bin/awspass.cjs",
+  "name": "@sixxgate/awspass",
+  "version": "0.4.0",
+  "description": "Store credentials in the system keyring, while using only temporary tokens for AWS CLI and compatible tools",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "prepack": "npm run build.production",
@@ -11,13 +10,11 @@
     "build.development": "webpack --mode=development",
     "build": "npm run build.production",
     "lint": "eslint src/**/*.ts *.cjs",
-    "fix": "eslint --fix src/**/*.ts *.cjs"
+    "fix": "eslint --fix src/**/*.ts *.cjs",
+    "prepare": "husky install"
   },
   "author": "Matthew Holder",
   "license": "GPL-2.0",
-  "directories": {
-    "bin": "./bin"
-  },
   "bin": {
     "awspass": "bin/awspass.cjs"
   },
@@ -29,13 +26,15 @@
     "README.md",
     "LICENSE"
   ],
+  "publishConfig": {
+    "access": "public"
+  },
   "dependencies": {
-    "@aws-sdk/client-sts": "^3.131.0",
+    "@aws-sdk/client-sts": "^3.137.0",
     "commander": "^9.4.0",
     "common-tags": "^1.8.2",
     "env-paths": "^3.0.0",
     "execa": "^6.1.0",
-    "figures": "^4.0.1",
     "ini": "^3.0.0",
     "keytar": "^7.9.0",
     "kleur": "^4.1.5",
@@ -66,6 +65,7 @@
     "eslint-plugin-import": "^2.26.0",
     "eslint-plugin-node": "^11.1.0",
     "eslint-plugin-promise": "^6.0.0",
+    "husky": "^8.0.1",
     "ts-loader": "^9.3.1",
     "type-fest": "^2.17.0",
     "typescript": "^4.7.4",

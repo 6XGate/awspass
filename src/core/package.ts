@@ -4,7 +4,6 @@ import { basename, resolve } from 'node:path'
 import { DateTime } from 'luxon'
 import spdxLicenseList from 'spdx-license-list'
 import v from 'vahvista'
-import { backStep } from '../helpers/path'
 import type { PredicateType } from '../helpers/types'
 import type { PackageJson, Simplify } from 'type-fest'
 
@@ -86,11 +85,16 @@ export class Package {
 }
 
 async function findPackageInfo (): Promise<string> {
-  for (const at of backStep(__dirname)) {
-    const maybe = resolve(at, 'package.json')
+  let path = __dirname
+  let previous: string | undefined
+  while (path !== previous) {
+    const maybe = resolve(path, 'package.json')
     if (await access(maybe, fs.R_OK).then(() => true).catch(() => false)) {
       return maybe
     }
+
+    previous = path
+    path = resolve(path, '..')
   }
 
   throw new ReferenceError('No package.json exists for the running program')
@@ -117,10 +121,12 @@ export class Program extends Package {
     return __filename
   }
 
+  get baseFileName (): string {
+    return basename(this.filePath)
+  }
+
   get baseName (): string {
-    // HACK: Uses __filename since this program will be bundled program.
-    // Don't rely on packageInfo for this since must match the program file name.
-    return basename(__filename)
+    return basename(this.name)
   }
 
   get copyrightRange (): string {

@@ -11,7 +11,7 @@ interface SessionOptions extends CommonOptions {
   output: OutputType
 }
 
-command('session')
+command('session', false)
   .description('starts a session')
   .addOption(new Option('--output <format>', 'output format').choices(kOutputType).default('json'))
   .action(async (options: SessionOptions) => {

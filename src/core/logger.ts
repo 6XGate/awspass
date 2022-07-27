@@ -1,9 +1,10 @@
 import process from 'node:process'
 import { DateTime } from 'luxon'
+import makeDir from 'make-dir'
 import { createLogger, format, transports } from 'winston'
-import { resolvePath } from '../helpers/path'
+import { paths } from '../helpers/path'
 import program from './package'
-import { kExitFailure, programPaths } from './system'
+import { kExitFailure } from './system'
 import type { TransformableInfo } from 'logform'
 
 function makeLogTimestamp (isoTimestamp: undefined | string): string {
@@ -16,7 +17,8 @@ function transformMessage (message: unknown): string {
   return typeof message === 'string' ? message : JSON.stringify(message)
 }
 
-const logPath = resolvePath(programPaths().log, `${program.name}.log`)
+await makeDir(paths.log())
+const logPath = paths.log(`${program.baseName}.log`)
 
 interface ExtendedInfo extends TransformableInfo {
   timestamp?: string

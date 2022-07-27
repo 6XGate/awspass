@@ -1,6 +1,6 @@
 import { GetSessionTokenCommand, STSClient } from '@aws-sdk/client-sts'
 import totp from 'totp-generator'
-import { getAwsProfileKey, getAwsRegion, isAwsStsResponseCredentials } from '../helpers/aws'
+import { getAwsProfileKey, isAwsStsResponseCredentials } from '../helpers/aws'
 import { prompt } from '../helpers/prompt'
 import keyRing from './key-ring'
 import type { CommonOptions } from '../cli/common'
@@ -13,12 +13,11 @@ export const kEnvNames: Record<string, string> = {
   Expiration: 'AWS_SESSION_EXPIRATION'
 }
 
-async function getOtp (key?: string): Promise<string> {
-  return key != null ? totp(key) : await prompt('One-time password:', 'AWSPass')
+async function getOtp (key?: string, options: null | CommonOptions = null): Promise<string> {
+  return key != null ? totp(key) : await prompt('One-time password:', 'AWSPass', options)
 }
 
-export async function login (options?: CommonOptions): Promise<AwsCredentialPayload> {
-  const region = await getAwsRegion(options)
+export async function login (options: null | CommonOptions = null): Promise<AwsCredentialPayload> {
   const profileKey = getAwsProfileKey(options)
   const session = await keyRing.getSessionToken(profileKey)
   if (session != null) {
@@ -33,11 +32,11 @@ export async function login (options?: CommonOptions): Promise<AwsCredentialPayl
 
   const client = new STSClient({
     credentials: { accessKeyId: credentials.keyId, secretAccessKey: credentials.secretKey },
-    region
+    region: options?.region
   })
 
   const code = credentials.mfaDevice != null
-    ? await getOtp(credentials.mfaKey)
+    ? await getOtp(credentials.mfaKey, options)
     : undefined
   const command = new GetSessionTokenCommand({
     DurationSeconds: 900,
