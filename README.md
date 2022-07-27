@@ -4,7 +4,7 @@ Stores your real AWS credentials in the system encrypted password storate and cr
 
 ## Installation
 
-Run `npm i -g awspass`
+Run `npm i -g @sixxgate/awspass`
 
 ## Usage
 
