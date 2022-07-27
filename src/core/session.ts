@@ -1,22 +1,28 @@
 import { GetSessionTokenCommand, STSClient } from '@aws-sdk/client-sts'
 import totp from 'totp-generator'
-import type { AwsCredentialPayload } from '../utils/aws'
-import { getAwsProfileKey, getAwsRegion, isAwsStsResponseCredentials } from '../utils/aws'
-import keyRing from '../utils/key-ring'
+import { getAwsProfileKey, isAwsStsResponseCredentials } from '../helpers/aws'
+import { prompt } from '../helpers/prompt'
+import keyRing from './key-ring'
+import type { CommonOptions } from '../cli/common'
+import type { AwsCredentialPayload } from '../helpers/aws'
 
-export default async function getSession (profile: undefined | string): Promise<void> {
-  const region = await getAwsRegion(profile)
-  if (region == null) {
-    throw new ReferenceError('No region is set')
-  }
+export const kEnvNames: Record<string, string> = {
+  AccessKeyId: 'AWS_ACCESS_KEY_ID',
+  SecretAccessKey: 'AWS_SECRET_ACCESS_KEY',
+  SessionToken: 'AWS_SESSION_TOKEN',
+  Expiration: 'AWS_SESSION_EXPIRATION'
+}
 
-  const profileKey = getAwsProfileKey(profile)
+async function getOtp (key?: string, options: null | CommonOptions = null): Promise<string> {
+  return key != null ? totp(key) : await prompt('One-time password:', 'AWSPass', options)
+}
+
+export async function login (options: null | CommonOptions = null): Promise<AwsCredentialPayload> {
+  const profileKey = getAwsProfileKey(options)
   const session = await keyRing.getSessionToken(profileKey)
   if (session != null) {
-    console.log(JSON.stringify(session, null, 2))
-
     // Using the cached session
-    return
+    return session
   }
 
   const credentials = await keyRing.getCredentials(profileKey)
@@ -26,10 +32,12 @@ export default async function getSession (profile: undefined | string): Promise<
 
   const client = new STSClient({
     credentials: { accessKeyId: credentials.keyId, secretAccessKey: credentials.secretKey },
-    region
+    region: options?.region
   })
 
-  const code = credentials.mfaKey != null ? totp(credentials.mfaKey) : undefined
+  const code = credentials.mfaDevice != null
+    ? await getOtp(credentials.mfaKey, options)
+    : undefined
   const command = new GetSessionTokenCommand({
     DurationSeconds: 900,
     SerialNumber: credentials.mfaDevice,
@@ -55,5 +63,6 @@ export default async function getSession (profile: undefined | string): Promise<
   }
 
   await keyRing.cacheSessionToken(profileKey, payload)
-  console.log(JSON.stringify(payload, null, 2))
+
+  return payload
 }

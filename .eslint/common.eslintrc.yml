@@ -1,0 +1,5 @@
+extends:
+  - ./javascript.eslintrc.yml
+  - plugin:node/recommended-script
+parserOptions:
+  sourceType: script

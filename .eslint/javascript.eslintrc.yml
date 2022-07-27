@@ -1,0 +1,45 @@
+extends:
+  - standard
+  - eslint:recommended
+  - plugin:import/recommended
+  - plugin:promise/recommended
+  - plugin:node/recommended
+env:
+  es2020: true
+parserOptions:
+  ecmaVersion: 2020
+rules:
+  # Allow range style, example: 0 < value && value < 100
+  yoda:
+    - error
+    - never
+    - exceptRange: true
+  # Our preferred import order
+  import/order:
+    - error
+    - newlines-between: never
+      alphabetize:
+        order: asc
+        caseInsensitive: false
+      groups:
+      - builtin
+      - external
+      - internal
+      - unknown
+      - parent
+      - sibling
+      - index
+      - object
+      - type
+  # Always require extends, except on TypeScript which doesn't like it
+  import/extensions:
+    - error
+    - always
+    - ignorePackages: true
+      pattern:
+        ts: never
+        tsx: never
+        d.ts: never
+  # Always disallow AMD module syntax
+  import/no-amd:
+    - error
