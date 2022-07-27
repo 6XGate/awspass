@@ -1,0 +1,15 @@
+{
+  "recommendations": [
+    "editorconfig.editorconfig",
+    "dbaeumer.vscode-eslint",
+    "redhat.vscode-yaml"
+  ],
+  "unwantedRecommendations": [
+    // Deprecated
+    "eg2.vscode-npm-script",
+    // Not for use within a browser
+    "firefox-devtools.vscode-firefox-debug",
+    // Not for use within a browser
+    "ms-edgedevtools.vscode-edge-devtools"
+  ]
+}
