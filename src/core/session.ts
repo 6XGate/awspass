@@ -1,10 +1,11 @@
 import { GetSessionTokenCommand, STSClient } from '@aws-sdk/client-sts'
 import totp from 'totp-generator'
-import { getAwsProfileKey, isAwsStsResponseCredentials } from '../helpers/aws'
+import { getAwsProfileKey, AwsStsResponseCredentials } from '../helpers/aws'
 import { prompt } from '../helpers/prompt'
 import keyRing from './key-ring'
 import type { CommonOptions } from '../cli/common'
 import type { AwsCredentialPayload } from '../helpers/aws'
+import type { DateString } from '../helpers/validation'
 
 export const kEnvNames: Record<string, string> = {
   AccessKeyId: 'AWS_ACCESS_KEY_ID',
@@ -50,16 +51,17 @@ export async function login (options: null | CommonOptions = null): Promise<AwsC
     throw new Error(`HTTP ${httpStatus}`)
   }
 
-  if (!isAwsStsResponseCredentials(response.Credentials)) {
-    throw new TypeError('Credentials not returned')
-  }
+  const token = AwsStsResponseCredentials.parse(response.Credentials)
+  // if (AwsStsResponseCredentials.parse(response.Credentials)) {
+  //   throw new TypeError('Credentials not returned')
+  // }
 
   const payload: AwsCredentialPayload = {
     Version: 1,
-    AccessKeyId: response.Credentials.AccessKeyId,
-    SecretAccessKey: response.Credentials.SecretAccessKey,
-    SessionToken: response.Credentials.SessionToken,
-    Expiration: response.Credentials.Expiration.toISOString()
+    AccessKeyId: token.AccessKeyId,
+    SecretAccessKey: token.SecretAccessKey,
+    SessionToken: token.SessionToken,
+    Expiration: token.Expiration.toISOString() as DateString
   }
 
   await keyRing.cacheSessionToken(profileKey, payload)

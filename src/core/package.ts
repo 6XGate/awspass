@@ -3,25 +3,27 @@ import { access, readFile } from 'node:fs/promises'
 import { basename, resolve } from 'node:path'
 import { DateTime } from 'luxon'
 import spdxLicenseList from 'spdx-license-list'
-import v from 'vahvista'
-import type { PredicateType } from '../helpers/types'
+import z from 'zod'
 import type { PackageJson, Simplify } from 'type-fest'
 
 let currentPackage: null | Program = null
 
-const isBrandedPackage = v.shape({
-  name: v.string.notEmpty,
-  version: v.string.notEmpty,
-  description: v.string.notEmpty,
-  license: v.string.notEmpty,
-  author: v.or(v.string.notEmpty, v.shape({
-    name: v.string.notEmpty,
-    url: v.or(v.undefined, v.url),
-    email: v.or(v.undefined, v.email)
+const PackageInfo = z.object({
+  name: z.string().min(1),
+  version: z.string().min(1),
+  description: z.string().min(1),
+  license: z.string().min(1),
+  author: z.string().min(1).or(z.object({
+    name: z.string().min(1),
+    url: z.string().url(),
+    email: z.string().email()
+  }).partial({
+    url: true,
+    email: true
   }))
 })
 
-type PackageInfo = Simplify<PredicateType<typeof isBrandedPackage> & PackageJson>
+type PackageInfo = Simplify<z.infer<typeof PackageInfo> & PackageJson>
 
 export class Package {
   package: PackageInfo
@@ -35,12 +37,7 @@ export class Package {
   }
 
   protected static async readPackageData (path: string): Promise<PackageInfo> {
-    const packageFile: unknown = JSON.parse(await readFile(path, { encoding: 'utf-8' }))
-    if (!isBrandedPackage(packageFile)) {
-      throw new ReferenceError('Package information must contain at least name, version, description, author, and license')
-    }
-
-    return packageFile
+    return PackageInfo.parse(JSON.parse(await readFile(path, { encoding: 'utf-8' })))
   }
 
   get name (): string {

@@ -94,7 +94,7 @@ const kIsMac = platform() === 'darwin'
 const kIsPlainPosix = !kIsWindows && !kIsMac
 
 const kPrompters: PrompterSystem = {
-  // Windows
+  // TODO: Windows
   cscript: {
     name: 'cscript',
     cmd: await which('cscript'),
@@ -102,7 +102,7 @@ const kPrompters: PrompterSystem = {
     weight: weight().forOs('win32'),
     prompter: () => { throw new Error('Windows not yet suported') }
   },
-  // macOS
+  // TODO: macOS
   osascript: {
     name: 'osascript',
     cmd: await which('osascript'),

@@ -31,7 +31,7 @@ rules:
       - index
       - object
       - type
-  # Always require extends, except on TypeScript which doesn't like it
+  # Always required extensions, except on TypeScript which doesn't like it
   import/extensions:
     - error
     - always

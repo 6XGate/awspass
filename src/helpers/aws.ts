@@ -3,11 +3,10 @@ import { homedir } from 'node:os'
 import { resolve } from 'node:path'
 import process from 'node:process'
 import ini from 'ini'
-import v from 'vahvista'
+import z from 'zod'
 import { Paths } from './path'
+import { DateString } from './validation'
 import type { CommonOptions } from '../cli/common'
-import type { PredicateType } from './types'
-import type { Predicate } from 'vahvista'
 
 export interface BaseConfigSection { [P: string]: string | Partial<BaseConfigSection> }
 
@@ -17,26 +16,30 @@ export const kAwsAccessKeyIdPattern = /^(?<![A-Z0-9])[A-Z0-9]{20}(?![A-Z0-9])$/u
 export const kAwsSecretAccessKeyPattern = /^(?<![A-Za-z0-9/+=])[A-Za-z0-9/+=]{40}(?![A-Za-z0-9/+=])$/u
 export const kAwsMfaDevicePattern = /^[\w+=/:,.@-]+$/u
 
-export const isAwsAccessKeyId = v.string.matches(kAwsAccessKeyIdPattern)
-export const isAwsSecretAccessKey = v.string.matches(kAwsSecretAccessKeyPattern)
-export const isAwsMfaDevice = v.string.matches(kAwsMfaDevicePattern)
+export type AwsAccessKeyId = z.infer<typeof AwsAccessKeyId>
+export const AwsAccessKeyId = z.string().regex(kAwsAccessKeyIdPattern)
 
-export const isAwsCredentialPayload = v.shape({
-  // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion -- It does, from Predicate<number> to Predicate<1>
-  Version: v.equal(1) as Predicate<1>,
-  AccessKeyId: isAwsAccessKeyId,
-  SecretAccessKey: isAwsSecretAccessKey,
-  SessionToken: v.string.notEmpty,
-  Expiration: v.dateLike
+export type AwsSecretAccessKey = z.infer<typeof AwsSecretAccessKey>
+export const AwsSecretAccessKey = z.string().regex(kAwsSecretAccessKeyPattern)
+
+export type AwsMfaDevice = z.infer<typeof AwsMfaDevice>
+export const AwsMfaDevice = z.string().regex(kAwsMfaDevicePattern)
+
+export type AwsCredentialPayload = z.infer<typeof AwsCredentialPayload>
+export const AwsCredentialPayload = z.object({
+  Version: z.literal(1),
+  AccessKeyId: AwsAccessKeyId,
+  SecretAccessKey: AwsSecretAccessKey,
+  SessionToken: z.string().min(1),
+  Expiration: DateString
 })
 
-export type AwsCredentialPayload = PredicateType<typeof isAwsCredentialPayload>
-
-export const isAwsStsResponseCredentials = v.shape({
-  AccessKeyId: isAwsAccessKeyId,
-  SecretAccessKey: isAwsSecretAccessKey,
-  SessionToken: v.string.notEmpty,
-  Expiration: v.date
+export type AwsStsResponseCredentials = z.infer<typeof AwsStsResponseCredentials>
+export const AwsStsResponseCredentials = z.object({
+  AccessKeyId: AwsAccessKeyId,
+  SecretAccessKey: AwsSecretAccessKey,
+  SessionToken: z.string().min(1),
+  Expiration: z.date()
 })
 
 export class AwsConfig {

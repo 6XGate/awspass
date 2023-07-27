@@ -1,15 +1,10 @@
-import type { Predicate } from 'vahvista'
+import z from 'zod'
+import type { Opaque } from 'type-fest'
 
-export class ArgumentError extends Error {
-  constructor (arg: string, message: string, value: unknown) {
-    super(`(${arg}): ${message}, ${JSON.stringify(value, null, 2)}`)
-  }
-}
+export type DateLike = z.infer<typeof DateLike>
+export const DateLike = z.preprocess(arg =>
+  (typeof arg === 'string' || arg instanceof Date ? new Date(arg) : arg),
+z.date())
 
-export function validate<T> (validator: Predicate<T>, args: Record<string, unknown>, message: string): void {
-  for (const [arg, value] of Object.entries(args)) {
-    if (!validator(value)) {
-      throw new ArgumentError(arg, message, value)
-    }
-  }
-}
+export type DateString = Opaque<string, 'IsoDateString'>
+export const DateString = z.string().refine(arg => !Number.isNaN(Date.parse(arg))) as unknown as z.ZodType<DateString>

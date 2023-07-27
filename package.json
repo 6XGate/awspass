@@ -13,7 +13,7 @@
     "fix": "eslint --fix src/**/*.ts *.cjs",
     "prepare": "husky install"
   },
-  "author": "Matthew Holder",
+  "author": "Matthew Holder <sixxgate@hotmail.com> (https://www.sleepingcats.org/)",
   "repository": "github:6XGate/awspass",
   "license": "GPL-2.0",
   "bin": {
@@ -31,7 +31,7 @@
     "access": "public"
   },
   "dependencies": {
-    "@aws-sdk/client-sts": "^3.137.0",
+    "@aws-sdk/client-sts": "^3.150.0",
     "commander": "^9.4.0",
     "common-tags": "^1.8.2",
     "env-paths": "^3.0.0",
@@ -45,9 +45,9 @@
     "prompts": "^2.4.2",
     "spdx-license-list": "^6.6.0",
     "totp-generator": "^0.0.13",
-    "vahvista": "^1.2.0",
     "which": "^2.0.2",
-    "winston": "^3.8.1"
+    "winston": "^3.8.1",
+    "zod": "^3.18.0"
   },
   "devDependencies": {
     "@tsconfig/node14": "^1.0.3",
@@ -58,9 +58,9 @@
     "@types/prompts": "2.0.*",
     "@types/totp-generator": "^0.0.4",
     "@types/which": "^2.0.1",
-    "@typescript-eslint/eslint-plugin": "^5.31.0",
-    "@typescript-eslint/parser": "^5.31.0",
-    "eslint": "^8.20.0",
+    "@typescript-eslint/eslint-plugin": "^5.33.1",
+    "@typescript-eslint/parser": "^5.33.1",
+    "eslint": "^8.22.0",
     "eslint-config-standard": "^17.0.0",
     "eslint-config-standard-with-typescript": "^22.0.0",
     "eslint-plugin-import": "^2.26.0",
@@ -68,7 +68,7 @@
     "eslint-plugin-promise": "^6.0.0",
     "husky": "^8.0.1",
     "ts-loader": "^9.3.1",
-    "type-fest": "^2.17.0",
+    "type-fest": "^2.18.0",
     "typescript": "^4.7.4",
     "webpack": "^5.74.0",
     "webpack-cli": "^4.10.0",

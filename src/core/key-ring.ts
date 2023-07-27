@@ -1,36 +1,29 @@
 import keytar from 'keytar'
-import v from 'vahvista'
+import z from 'zod'
 import logger from '../core/logger'
-import { isAwsAccessKeyId, isAwsCredentialPayload, isAwsMfaDevice, isAwsSecretAccessKey } from '../helpers/aws'
-import { validate } from '../helpers/validation'
-import type { AwsCredentialPayload } from '../helpers/aws'
+import { AwsAccessKeyId, AwsMfaDevice, AwsSecretAccessKey, AwsCredentialPayload } from '../helpers/aws'
 
 export const kBase32Pattern = /^[A-Z2-7=]+$/u
 
-export const isBase32 = v.matches(kBase32Pattern)
+export const Base32 = z.string().regex(kBase32Pattern)
 
-export type StoredCredentials =
-  { keyId: string, secretKey: string, mfaDevice: undefined, mfaKey: undefined } |
-  { keyId: string, secretKey: string, mfaDevice: string, mfaKey: undefined } |
-  { keyId: string, secretKey: string, mfaDevice: string, mfaKey: string }
-
-export const isStoredCredentials = v.or(
-  v.shape({
-    keyId: isAwsAccessKeyId,
-    secretKey: isAwsSecretAccessKey,
-    mfaDevice: isAwsMfaDevice,
-    mfaKey: isBase32
-  }),
-  v.shape({
-    keyId: isAwsAccessKeyId,
-    secretKey: isAwsSecretAccessKey,
-    mfaDevice: isAwsMfaDevice
-  }),
-  v.shape({
-    keyId: isAwsAccessKeyId,
-    secretKey: isAwsSecretAccessKey
-  })
-)
+export type StoredCredentials = z.infer<typeof StoredCredentials>
+export const StoredCredentials = z.object({
+  keyId: AwsAccessKeyId,
+  secretKey: AwsSecretAccessKey,
+  mfaDevice: AwsMfaDevice,
+  mfaKey: Base32
+}).or(z.object({
+  keyId: AwsAccessKeyId,
+  secretKey: AwsSecretAccessKey,
+  mfaDevice: AwsMfaDevice,
+  mfaKey: z.undefined()
+})).or(z.object({
+  keyId: AwsAccessKeyId,
+  secretKey: AwsSecretAccessKey,
+  mfaDevice: z.undefined(),
+  mfaKey: z.undefined()
+}))
 
 export class KeyRing {
   async getCredentials (profileKey: string): Promise<null | StoredCredentials> {
@@ -39,14 +32,14 @@ export class KeyRing {
       return null
     }
 
-    const credentials = JSON.parse(data) as null | Partial<StoredCredentials>
-    if (!isStoredCredentials(credentials)) {
-      logger.error(`Data from @aws/session/${profileKey} is not our stored access key data\nGot "${data}"`)
+    const parsed = StoredCredentials.safeParse(JSON.parse(data))
+    if (!parsed.success) {
+      logger.error(parsed.error)
 
       return null
     }
 
-    return credentials as StoredCredentials
+    return parsed.data
   }
 
   async storeCredentials (profileKey: string, credentials: StoredCredentials): Promise<void> {
@@ -62,13 +55,14 @@ export class KeyRing {
       return null
     }
 
-    const credentials = JSON.parse(data) as unknown
-    if (!isAwsCredentialPayload(credentials)) {
-      logger.error(`Data from @aws/session/${profileKey} is not our AWS session key payload\nGot "${data}"`)
+    const parsed = AwsCredentialPayload.safeParse(JSON.parse(data))
+    if (!parsed.success) {
+      logger.error(parsed.error)
 
       return null
     }
 
+    const credentials = parsed.data
     if (Date.parse(credentials.Expiration) <= Date.now()) {
       logger.warn('Sesssion expired')
 
@@ -79,8 +73,6 @@ export class KeyRing {
   }
 
   async cacheSessionToken (profileKey: string, payload: AwsCredentialPayload): Promise<void> {
-    validate(isAwsCredentialPayload, { payload }, 'must be a valid stored credentials object')
-
     // HACK: Some key-rings won't replace an existing entry, such as GNOME keyring.
     await keytar.deletePassword('@aws/session', profileKey)
 

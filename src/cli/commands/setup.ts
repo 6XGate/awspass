@@ -1,14 +1,14 @@
 import kleur from 'kleur'
 import prompts from 'prompts'
-import keyRing, { isBase32, isStoredCredentials } from '../../core/key-ring'
+import keyRing, { Base32, StoredCredentials } from '../../core/key-ring'
 import logger from '../../core/logger'
 import program from '../../core/package'
 import { CancelError } from '../../core/system'
-import { awsConfig, getAwsProfileKey, isAwsAccessKeyId, isAwsMfaDevice, isAwsSecretAccessKey } from '../../helpers/aws'
+import { AwsAccessKeyId, awsConfig, AwsMfaDevice, AwsSecretAccessKey, getAwsProfileKey } from '../../helpers/aws'
 import { toUndefinedIfEmpty } from '../../helpers/prompt'
 import { command } from '../common'
-import type { StoredCredentials } from '../../core/key-ring'
 import type { CommonOptions } from '../common'
+import type z from 'zod'
 
 command('setup')
   .summary('setup a profile')
@@ -20,45 +20,41 @@ command('setup')
       logger.warn(`${profile ?? 'default'} profile already exists, updating credentials!`)
     }
 
-    const credentials: StoredCredentials = await prompts([
+    const credentials = StoredCredentials.parse(await prompts([
       {
         type: 'text' as const,
         name: 'keyId' as const,
         message: `AWS Key ID ${kleur.reset().dim('required (AXXXXXXXXXXXXXXXXXXX)')}`,
         format: toUndefinedIfEmpty,
-        validate: isAwsAccessKeyId
+        validate: is(AwsAccessKeyId)
       },
       {
         type: 'password' as const,
         name: 'secretKey' as const,
         message: `AWS Secret Key ${kleur.reset().dim('required (XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX)')}`,
         format: toUndefinedIfEmpty,
-        validate: isAwsSecretAccessKey
+        validate: is(AwsSecretAccessKey)
       },
       {
         type: 'text' as const,
         name: 'mfaDevice' as const,
         message: `MFA Device Serial or ARN ${kleur.reset().dim('normally optional, but required for MFA (device serial) or (arn:aws:iam::############:mfa/user)')}`,
         format: toUndefinedIfEmpty,
-        validate: isEmptyOr(isAwsMfaDevice)
+        validate: isEmptyOr(AwsMfaDevice)
       },
       {
-        type: prev => isAwsMfaDevice(prev) ? 'password' : undefined,
+        type: prev => AwsMfaDevice.safeParse(prev).success ? 'password' : undefined,
         name: 'mfaKey' as const,
         message: `MFA Source Key ${kleur.reset().dim('optional, provide to auto-fill MFA one-time passwords')}`,
         format: toUndefinedIfEmpty,
-        validate: isEmptyOr(isBase32)
+        validate: isEmptyOr(Base32)
       }
     ],
     {
       onCancel: (): never => {
         throw new CancelError()
       }
-    })
-
-    if (!isStoredCredentials(credentials)) {
-      throw new Error('Validation failed on user input')
-    }
+    }))
 
     const config = await awsConfig.getConfig()
     const originalProfileConfig = awsConfig.getProfile(config, profileKey)
@@ -74,6 +70,10 @@ command('setup')
     logger.info(originalProfileConfig == null ? `[${profileKey}] created` : `[${profileKey}] updated`)
   })
 
-function isEmptyOr (op: (value: unknown) => boolean): ((value: unknown) => boolean) {
-  return value => value == null || String(value).length === 0 || op(value)
+function is<Schema extends z.ZodType> (schema: Schema): (value: unknown) => boolean {
+  return value => schema.safeParse(value).success
+}
+
+function isEmptyOr<Schema extends z.ZodType> (schema: Schema): (value: unknown) => boolean {
+  return value => value == null || String(value).length === 0 || schema.safeParse(value).success
 }
